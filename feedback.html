@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Feedback - Email Bounce to SMS</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Feedback</h1>
+  </header>
+
+  <main class="content">
+    <form id="feedbackForm">
+      <label for="name">Name:</label><br>
+      <input type="text" id="name" name="name" required><br><br>
+
+      <label for="email">Email:</label><br>
+      <input type="email" id="email" name="email" required><br><br>
+
+      <label for="message">Feedback:</label><br>
+      <textarea id="message" name="message" rows="5" required></textarea><br><br>
+
+      <button type="submit" class="btn">Submit Feedback</button>
+    </form>
+
+    <p id="feedbackResponse" style="margin-top:20px; font-weight:bold;"></p>
+  </main>
+
+  <footer>
+    <a href="navigation.html" class="btn">Back to Navigation</a>
+  </footer>
+</body>
+</html>
