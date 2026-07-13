@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>How - Email Bounce to SMS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>How to Route an Email Bounce into an SMS Sequence</h1>
+  </header>
+
+  <main class="content">
+    <section>
+      <h2>Executive Summary</h2>
+      <p>Executing a seamless cross-channel pivot requires a low-latency, automated data pipeline. The technical architecture transitions a failed delivery event (email bounce) into a secondary engagement trigger (SMS sequence) without manual intervention. This process relies on real-time event listeners, data parsing, compliance validation, and dynamic routing engines.</p>
+    </section>
+
+    <section>
+      <h2>The Step-by-Step Architectural Flow</h2>
+
+      <h3>1. Event Detection (The Trigger)</h3>
+      <p><strong>The Mechanism:</strong> The process begins at the Email Service Provider (ESP) level. When a delivery failure occurs, the ESP generates a standard status notification (Webhook or Event Bridge notification) flagging the specific failure type.</p>
+      <p><strong>Filtering:</strong> The system categorizes the bounce. Hard bounces (invalid addresses) immediately trigger the SMS bypass route. Soft bounces (temporary issues) are evaluated against a retry threshold before routing to the SMS pipeline.</p>
+
+      <h3>2. Data Parsing and Payload Extraction</h3>
+      <p><strong>Information Extraction:</strong> The system receives the bounce notification payload and extracts core identifiers: the recipient’s unique user ID, the failed email address, and the specific campaign or contextual trigger (e.g., Welcome Sequence or Urgent Alert).</p>
+      <p><strong>Database Cross-Referencing:</strong> The architecture queries the centralized Customer Relationship Management (CRM) platform or Customer Data Platform (CDP) to match the user ID with a verified, associated mobile phone number.</p>
+
+      <h3>3. Compliance and Suppression Filtering</h3>
+      <p><strong>Consent Verification:</strong> Prior to queuing the SMS, the system runs an automated compliance check against the global suppression list to ensure the user has explicitly opted in to receive SMS communication (adhering to TCPA, GDPR, or local telecom regulations).</p>
+      <p><strong>Content Mapping:</strong> The routing engine matches the original email context to a corresponding, pre-approved SMS template to ensure message continuity.</p>
+
+      <h3>4. Sequence Initiation and Dispatch</h3>
+      <p><strong>API Delivery:</strong> Once cleared by the compliance filter, the validated payload (phone number and localized text copy) is pushed via API to the SMS Gateway Provider.</p>
+      <p><strong>Fallback Status Tracking:</strong> The SMS gateway dispatches the text and returns delivery status logs (Delivered, Failed, or Blocked) back to the central CRM to close the loop on the user journey.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a href="navigation.html" class="btn">Back to Navigation</a>
+  </footer>
+</body>
+</html>
