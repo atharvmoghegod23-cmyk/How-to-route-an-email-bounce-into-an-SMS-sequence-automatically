@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Code - Email Bounce to SMS</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Optional: Include a syntax highlighting library like Prism.js -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+</head>
+<body>
+  <header>
+    <h1>Webhook and SMS Routing Code</h1>
+  </header>
+
+  <main class="content">
+    <section>
+      <h2>1. Webhook Endpoint and Payload Parsing</h2>
+      <p>The following server-side endpoint listens for asynchronous POST requests dispatched by the email provider's event engine upon a delivery failure.</p>
+      <pre><code class="language-javascript">
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+// Endpoint to receive real-time email bounce events
+app.post('/api/v1/email-bounce-webhook', async (req, res) => {
+    const events = req.body;
+
+    for (const event of events) {
+        // Filter exclusively for permanent delivery failures (Hard Bounces)
+        if (event.event === 'bounce' && event.type === 'blocked') {
+            const emailAddress = event.email;
+            const campaignId = event.campaign_id;
+
+            try {
+                // Initialize the cross-channel routing sequence
+                await initiateSmsPivotPipeline(emailAddress, campaignId);
+            } catch (error) {
+                console.error(`Pipeline execution failed for ${emailAddress}:`, error.message);
+            }
+        }
+    }
+    // Return a 200 OK immediately to acknowledge receipt to the ESP
+    return res.status(200).send('Event processed successfully.');
+});
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>2. Core Routing and Compliance Logic</h2>
+      <pre><code class="language-javascript">
+async function initiateSmsPivotPipeline(emailAddress, campaignId) {
+    // Step 1: Query the database to fetch user details associated with the bounced email
+    const user = await db.collection('users').findOne({ email: emailAddress });
+    
+    if (!user || !user.phoneNumber) {
+        throw new Error(`No associated record or phone number found for ${emailAddress}`);
+    }
+
+    // Step 2: Compliance check (Ensure user has opted into SMS communication)
+    if (!user.smsOptIn) {
+        console.log(`Compliance Warning: User ${user._id} has not granted SMS consent. Suppressing dispatch.`);
+        return;
+    }
+
+    // Step 3: Contextual mapping (Determine the appropriate SMS copy based on failed campaign)
+    const smsContent = getDynamicSmsTemplate(campaignId, user.firstName);
+
+    // Step 4: Dispatch payload to the SMS gateway provider
+    await dispatchSmsViaGateway(user.phoneNumber, smsContent);
+
+    // Step 5: Sanitize the database by flagging the invalid email address
+    await db.collection('users').updateOne(
+        { _id: user._id },
+        { $set: { emailStatus: 'bounced', updatedAt: new Date() } }
+    );
+}
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>3. SMS Gateway Integration</h2>
+      <pre><code class="language-javascript">
+const twilio = require('twilio');
+const twilioClient = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+
+async function dispatchSmsViaGateway(phoneNumber, messageBody) {
+    try {
+        await twilioClient.messages.create({
+            body: messageBody,
+            to: phoneNumber,
+            from: process.env.TWILIO_VERIFIED_NUMBER
+        });
+        console.log(`SMS successfully dispatched to terminal: ${phoneNumber}`);
+    } catch (apiError) {
+        throw new Error(`SMS Gateway API Failure: ${apiError.message}`);
+    }
+}
+
+function getDynamicSmsTemplate(campaignId, name) {
+    // Maps the original email context to a short-form, high-conversion SMS template
+    const templates = {
+        'welcome_sequence': `Hi ${name}, it looks like our welcome email missed your inbox! Click here to activate your account: https://example.com/act`,
+        'urgent_alert': `Alert: ${name}, we tried emailing you an important update regarding your account status. Please review it here: https://example.com/status`
+    };
+    return templates[campaignId] || `Hi ${name}, we noticed an issue delivering updates to your email. Reach us here to update your preferences.`;
+}
+      </code></pre>
+    </section>
+
+    <section>
+      <h2>Code Architecture Note</h2>
+      <p>Ensure all environment variables (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, etc.) are secured using an encrypted secret manager. This webhook architecture is stateless and horizontally scalable, capable of processing thousands of parallel bounce events concurrently.</p>
+    </section>
+  </main>
+
+  <footer>
+    <a href="navigation.html" class="btn">Back to Navigation</a>
+  </footer>
+
+  <!-- Optional: Prism.js script for syntax highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>
