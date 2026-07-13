@@ -5,14 +5,24 @@
 }
 
 :root {
-  --primary-color: #2563eb;
-  --primary-dark: #1e40af;
+  --primary-color: #667eea;
+  --primary-dark: #5568d3;
   --secondary-color: #f0f9ff;
+  --accent-pink: #f472b6;
+  --accent-purple: #c084fc;
+  --accent-cyan: #06b6d4;
+  --accent-lime: #bef264;
+  --accent-orange: #fb923c;
+  --pastel-blue: #bfdbfe;
+  --pastel-pink: #fbcfe8;
+  --pastel-purple: #e9d5ff;
+  --pastel-green: #dcfce7;
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
 body {
@@ -77,10 +87,31 @@ body {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
   color: white;
   padding: 100px 20px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .hero .container {
@@ -164,7 +195,18 @@ body {
 /* Features Section */
 .features {
   padding: 80px 20px;
-  background-color: var(--secondary-color);
+  background: linear-gradient(135deg, #f0f9ff 0%, #fce7f3 50%, #ede9fe 100%);
+  position: relative;
+}
+
+.features::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
 }
 
 .features h2 {
@@ -183,20 +225,70 @@ body {
 .feature-card {
   background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: var(--shadow);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
+  position: relative;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.feature-card:nth-child(1) {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+}
+
+.feature-card:nth-child(2) {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.feature-card:nth-child(3) {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+}
+
+.feature-card:nth-child(4) {
+  background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-lg);
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
 }
 
 .feature-icon {
-  font-size: 3rem;
+  font-size: 3.5rem;
   margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .feature-card h3 {
@@ -213,7 +305,18 @@ body {
 /* Benefits Section */
 .benefits {
   padding: 80px 20px;
-  background-color: white;
+  background: linear-gradient(135deg, #ffffff 0%, #fef3c7 100%);
+  position: relative;
+}
+
+.benefits::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #fb923c, #f97316, #ea580c, #dc2626);
 }
 
 .benefits .container {
@@ -243,8 +346,19 @@ body {
 /* Implementation Section */
 .implementation {
   padding: 80px 20px;
-  background-color: var(--secondary-color);
+  background: linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 50%, #fecaca 100%);
   text-align: center;
+  position: relative;
+}
+
+.implementation::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(90deg, #4facfe, #00f2fe, #06b6d4, #0891b2);
 }
 
 .implementation .container {
@@ -266,10 +380,12 @@ body {
 
 /* Footer */
 .footer {
-  background-color: var(--text-primary);
+  background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
   color: white;
   padding: 2rem 20px;
   text-align: center;
+  border-top: 8px solid;
+  border-image: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #4facfe) 1;
 }
 
 .footer p {
